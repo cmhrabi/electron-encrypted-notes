@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 interface EditorProps {
   mkdStr?: string
+  filePath: string
 }
 
 const Editor = () => {
@@ -19,6 +20,12 @@ const Editor = () => {
     navigate(-1)
   }
 
+  const handleSave = () => {
+    if (!value) return;
+
+    window.electron.ipcRenderer.sendMessage('saveText', value, props.filePath)
+  }
+
   return (
     <>
       <Container fluid>
@@ -28,7 +35,7 @@ const Editor = () => {
           </Col>
           <Col></Col>
           <Col>
-            <Button>Save</Button>
+            <Button onClick={handleSave} >Save</Button>
           </Col>
         </Row>
       </Container>

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint global-require: off, no-console: off */
 
@@ -10,11 +11,12 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import { app, BrowserWindow, dialog, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+import fs from 'fs'
 
 class AppUpdater {
   constructor() {
@@ -24,13 +26,21 @@ class AppUpdater {
   }
 }
 
-let mainWindow: BrowserWindow | null = null;
+let mainWindow = null;
 
 ipcMain.on('ipc-example', async (event, arg) => {
-  const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
+  const msgTemplate = (pingPong) => `IPC test: ${pingPong}`;
   console.log(msgTemplate(arg));
   event.reply('ipc-example', msgTemplate('pong'));
 });
+
+ipcMain.on('saveText', (event, textVal, filePath) => {
+  fs.writeFileSync(filePath, textVal)
+});
+
+ipcMain.handle('openFile', async (event) => {
+  return await openFile()
+})
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -66,7 +76,7 @@ const createWindow = async () => {
     ? path.join(process.resourcesPath, 'assets')
     : path.join(__dirname, '../../assets');
 
-  const getAssetPath = (...paths: string[]): string => {
+  const getAssetPath = (...paths) => {
     return path.join(RESOURCES_PATH, ...paths);
   };
 
@@ -76,6 +86,8 @@ const createWindow = async () => {
     height: 800,
     icon: getAssetPath('icon.png'),
     webPreferences: {
+      contextIsolation: true,
+      nodeIntegration: true,
       preload: app.isPackaged
         ? path.join(__dirname, 'preload.js')
         : path.join(__dirname, '../../.erb/dll/preload.js'),
@@ -136,3 +148,25 @@ app
     });
   })
   .catch(console.log);
+
+
+export const openFile = async () => {
+  const files = await dialog.showOpenDialog(mainWindow, {
+    properties: ['openFile'],
+    filters: [{
+      name: 'Text',
+      extensions: ['txt', 'md']
+    }]
+  })
+
+  if (!files) return;
+
+  const file = files.filePaths[0];
+
+  const fileContent = fs.readFileSync(file).toString()
+
+  return {
+    filePath: file,
+    fileContent: fileContent
+  }
+}

@@ -14,7 +14,7 @@ const MainButton: React.FC<MainButtonProps> = ({
   return (
     <Container className="text-center">
       <Button variant="primary" onClick={onClick} className="text-center">
-        Decrypt
+        Open a notes file!
       </Button>
       {error &&
         <Alert className="mt-2 w-100" variant='danger'>
