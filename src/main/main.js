@@ -17,6 +17,7 @@ import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 import fs from 'fs'
+import crypto from 'crypto'
 
 class AppUpdater {
   constructor() {
@@ -34,12 +35,13 @@ ipcMain.on('ipc-example', async (event, arg) => {
   event.reply('ipc-example', msgTemplate('pong'));
 });
 
-ipcMain.on('saveText', (event, textVal, filePath) => {
-  fs.writeFileSync(filePath, textVal)
+ipcMain.on('saveText', async (event, textVal, password, filePath) => {
+  const encText = encrypt(textVal, password)
+  fs.writeFileSync(filePath, encText)
 });
 
-ipcMain.handle('openFile', async (event) => {
-  return await openFile()
+ipcMain.handle('openFile', async (event, password) => {
+  return await openFile(password)
 })
 
 if (process.env.NODE_ENV === 'production') {
@@ -149,8 +151,39 @@ app
   })
   .catch(console.log);
 
+const encrypt = (plainText, password) => {
+  try {
+    const iv = crypto.randomBytes(16);
+    const key = crypto.createHash('sha256').update(password).digest('base64').substr(0, 32);
+    const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
 
-export const openFile = async () => {
+    let encrypted = cipher.update(plainText);
+    encrypted = Buffer.concat([encrypted, cipher.final()])
+    return iv.toString('hex') + ':' + encrypted.toString('hex');
+
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+const decrypt = (encryptedText, password) => {
+  try {
+    const textParts = encryptedText.split(':');
+    const iv = Buffer.from(textParts.shift(), 'hex');
+
+    const encryptedData = Buffer.from(textParts.join(':'), 'hex');
+    const key = crypto.createHash('sha256').update(password).digest('base64').substr(0, 32);
+    const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
+
+    const decrypted = decipher.update(encryptedData);
+    const decryptedText = Buffer.concat([decrypted, decipher.final()]);
+    return decryptedText.toString();
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export const openFile = async (password) => {
   const files = await dialog.showOpenDialog(mainWindow, {
     properties: ['openFile'],
     filters: [{
@@ -165,8 +198,9 @@ export const openFile = async () => {
 
   const fileContent = fs.readFileSync(file).toString()
 
+  const decryptedText = decrypt(fileContent, password)
   return {
     filePath: file,
-    fileContent: fileContent
+    fileContent: decryptedText,
   }
 }

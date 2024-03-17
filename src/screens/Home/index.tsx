@@ -1,4 +1,4 @@
-import { Container } from 'react-bootstrap';
+import { Col, Container, Form, Row } from 'react-bootstrap';
 import MainButton from '../../components/MainButton';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -7,9 +7,16 @@ import CustomContainer from '../../components/CustomContainer';
 const Home = () => {
   const navigate = useNavigate();
 
+  const [password, setPassword] = React.useState<string | undefined>(undefined)
+
   const  handleClick = async () => {
-    const file = await window.electron.ipcRenderer.handle('openFile')
-    navigate('/editor', {state: {mkdStr: file.fileContent, filePath: file.filePath}})
+    const file = await window.electron.ipcRenderer.handle('openFile', password)
+    navigate('/editor', {state: {mkdStr: file.fileContent, filePath: file.filePath, password: password}})
+  }
+
+  const handleChange = (e) => {
+    console.log(password)
+    setPassword(e.target.value)
   }
 
   return (
@@ -25,6 +32,14 @@ const Home = () => {
         </h5>
       </CustomContainer>
       <CustomContainer alignchildren='center'>
+        <Form.Group as={Row} className="mb-3" controlId="formPlaintextPassword">
+          <Form.Label column sm="2">
+            Password
+          </Form.Label>
+          <Col sm="10">
+            <Form.Control type="password" value={password} onChange={handleChange} placeholder="Password" />
+          </Col>
+        </Form.Group>
         <MainButton onClick={handleClick}/>
       </CustomContainer>
     </Container>

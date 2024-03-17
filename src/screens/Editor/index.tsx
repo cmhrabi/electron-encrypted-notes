@@ -6,6 +6,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 interface EditorProps {
   mkdStr?: string
   filePath: string
+  password: string
 }
 
 const Editor = () => {
@@ -20,10 +21,9 @@ const Editor = () => {
     navigate(-1)
   }
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!value) return;
-
-    window.electron.ipcRenderer.sendMessage('saveText', value, props.filePath)
+    window.electron.ipcRenderer.sendMessage('saveText', value, props.password, props.filePath)
   }
 
   return (
