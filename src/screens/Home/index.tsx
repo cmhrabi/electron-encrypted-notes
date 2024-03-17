@@ -14,8 +14,7 @@ const Home = () => {
     navigate('/editor', {state: {mkdStr: file.fileContent, filePath: file.filePath, password: password}})
   }
 
-  const handleChange = (e) => {
-    console.log(password)
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value)
   }
 

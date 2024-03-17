@@ -6,7 +6,6 @@ import {
   BrowserWindow,
   MenuItemConstructorOptions,
 } from 'electron';
-import { openFile } from './main';
 
 interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
   selector?: string;
