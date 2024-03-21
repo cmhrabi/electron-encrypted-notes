@@ -1,16 +1,24 @@
-import { Col, Container, Form, Row } from 'react-bootstrap';
+import { Alert, Col, Container, Form, Row } from 'react-bootstrap';
 import MainButton from '../../components/MainButton';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import CustomContainer from '../../components/CustomContainer';
+import BackgroundImage from '../../../assets/background.jpg'
 
 const Home = () => {
   const navigate = useNavigate();
 
   const [password, setPassword] = React.useState<string | undefined>(undefined)
+  const [error, setError] = React.useState<Error | undefined>(undefined)
 
   const  handleClick = async () => {
     const file = await window.electron.ipcRenderer.handle('openFile', password)
+
+    if (!file) return;
+
+    if (!password) {
+      setError(new Error('No Password Set'))
+      return;
+    }
     navigate('/editor', {state: {mkdStr: file.fileContent, filePath: file.filePath, password: password}})
   }
 
@@ -19,28 +27,26 @@ const Home = () => {
   }
 
   return (
-    <Container fluid>
-      <CustomContainer className='text-center' alignchildren='center'>
-        <h1>
+    <Container style={{backgroundImage: `url(${BackgroundImage}`}} className='d-flex flex-column text-center justify-content-between align-items-center px-container-main min-vh-100' fluid>
+      <Container className='d-flex flex-column text-center align-items-center'>
+        <h1 className='pt-5'>
           Ecrypted Notes
         </h1>
-      </CustomContainer>
-      <CustomContainer className='text-center' alignchildren='center'>
         <h5>
           By cmhrabi
         </h5>
-      </CustomContainer>
-      <CustomContainer alignchildren='center'>
-        <Form.Group as={Row} className="mb-3" controlId="formPlaintextPassword">
-          <Form.Label column sm="2">
-            Password
-          </Form.Label>
-          <Col sm="10">
-            <Form.Control type="password" value={password} onChange={handleChange} placeholder="Password" />
-          </Col>
+        <Form.Group className="mb-3 mt-5 w-50" controlId="formPlaintextPassword">
+          <Form.Control type="password" value={password} onChange={handleChange} placeholder="Password" />
         </Form.Group>
-        <MainButton onClick={handleClick}/>
-      </CustomContainer>
+        <MainButton error={error} onClick={handleClick}/>
+      </Container>
+      <Container className='d-flex flex-column align-items-center'>
+        {error &&
+          <Alert className="mt-2 w-35" variant='danger'>
+            Error: {error?.message}
+          </Alert>
+        }
+      </Container>
     </Container>
   );
 }

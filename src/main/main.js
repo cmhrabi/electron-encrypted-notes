@@ -196,6 +196,7 @@ export const openFile = async (password) => {
 
   const file = files.filePaths[0];
 
+  if (!file) return;
   const fileContent = fs.readFileSync(file).toString()
 
   const decryptedText = decrypt(fileContent, password)

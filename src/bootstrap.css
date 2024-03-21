@@ -458,6 +458,11 @@ pre {
   margin-right: auto;
   margin-left: auto; }
 
+.px-container-main {
+  padding-right: 25%;
+  padding-left: 25%;
+}
+
 @media (min-width: 576px) {
   .container, .container-sm {
     max-width: 540px; } }
@@ -5512,6 +5517,9 @@ button.bg-dark:focus {
 
 .w-25 {
   width: 25% !important; }
+
+.w-35 {
+  width: 35% !important; }
 
 .w-50 {
   width: 50% !important; }
