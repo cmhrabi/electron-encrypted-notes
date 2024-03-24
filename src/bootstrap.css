@@ -479,6 +479,10 @@ pre {
   .container, .container-sm, .container-md, .container-lg, .container-xl {
     max-width: 1140px; } }
 
+.home-background {
+  background: linear-gradient(rgba(255,255,255,1), rgba(255,255,255,0) 100%), url(../assets/background.jpg);
+}
+
 .row {
   display: flex;
   flex-wrap: wrap;
@@ -5781,6 +5785,10 @@ button.bg-dark:focus {
 .pt-5,
 .py-5 {
   padding-top: 3rem !important; }
+
+.pt-6 {
+  padding-top: 7rem !important;
+}
 
 .pr-5,
 .px-5 {

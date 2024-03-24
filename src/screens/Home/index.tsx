@@ -1,8 +1,7 @@
-import { Alert, Col, Container, Form, Row } from 'react-bootstrap';
+import { Alert, Container, Form } from 'react-bootstrap';
 import MainButton from '../../components/MainButton';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import BackgroundImage from '../../../assets/background.jpg'
 
 const Home = () => {
   const navigate = useNavigate();
@@ -27,9 +26,9 @@ const Home = () => {
   }
 
   return (
-    <Container style={{backgroundImage: `url(${BackgroundImage}`}} className='d-flex flex-column text-center justify-content-between align-items-center px-container-main min-vh-100' fluid>
+    <Container  className='d-flex flex-column text-center justify-content-between align-items-center px-container-main min-vh-100 home-background' fluid>
       <Container className='d-flex flex-column text-center align-items-center'>
-        <h1 className='pt-5'>
+        <h1 className='pt-6'>
           Ecrypted Notes
         </h1>
         <h5>
