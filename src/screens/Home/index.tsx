@@ -45,6 +45,7 @@ const Home = () => {
             Error: {error?.message}
           </Alert>
         }
+        <a href="https://www.flaticon.com/free-icons/secure-code" title="secure code icons" target='_blank' rel="noreferrer">Secure code icons created by IconBaandar - Flaticon</a>
       </Container>
     </Container>
   );

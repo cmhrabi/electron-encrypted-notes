@@ -86,7 +86,7 @@ const createWindow = async () => {
     show: false,
     width: 1500,
     height: 800,
-    icon: getAssetPath('icon.png'),
+    icon: getAssetPath('shield.png'),
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: true,
