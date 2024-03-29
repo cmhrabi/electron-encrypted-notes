@@ -1,11 +1,7 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
-import {
-  app,
-  Menu,
-  shell,
-  BrowserWindow,
-  MenuItemConstructorOptions,
-} from 'electron';
+import { app, BrowserWindow, dialog, Menu, MenuItemConstructorOptions, shell } from 'electron';
+import { openFile} from './features/files';
+import { resolveHtmlPath } from './util';
 
 interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
   selector?: string;
@@ -192,7 +188,7 @@ export default class MenuBuilder {
   }
 
   buildDefaultTemplate() {
-    const templateDefault = [
+    return [
       {
         label: '&File',
         submenu: [
@@ -203,6 +199,20 @@ export default class MenuBuilder {
               this.mainWindow.close();
             },
           },
+          {
+            label: '&Open',
+            accelerator: 'Ctrl+O',
+            click:  async () => {
+              const files = await dialog.showOpenDialog(this.mainWindow, {
+                properties: ['openFile'],
+                filters: [{
+                  name: 'Text',
+                  extensions: ['txt', 'md']
+                }]
+              })
+              openFile('password', files).then(() => this.mainWindow.loadURL(resolveHtmlPath('/editor')))
+            }
+          }
         ],
       },
       {
@@ -210,42 +220,42 @@ export default class MenuBuilder {
         submenu:
           process.env.NODE_ENV === 'development' ||
           process.env.DEBUG_PROD === 'true'
-          	? [
-          		{
-          			label: '&Reload',
-          			accelerator: 'Ctrl+R',
-          			click: () => {
-          				this.mainWindow.webContents.reload();
-          			},
-          		},
-          		{
-          			label: 'Toggle &Full Screen',
-          			accelerator: 'F11',
-          			click: () => {
-          				this.mainWindow.setFullScreen(
-          					!this.mainWindow.isFullScreen(),
-          				);
-          			},
-          		},
-          		{
-          			label: 'Toggle &Developer Tools',
-          			accelerator: 'Alt+Ctrl+I',
-          			click: () => {
-          				this.mainWindow.webContents.toggleDevTools();
-          			},
-          		},
-          	]
-          	: [
-          		{
-          			label: 'Toggle &Full Screen',
-          			accelerator: 'F11',
-          			click: () => {
-          				this.mainWindow.setFullScreen(
-          					!this.mainWindow.isFullScreen(),
-          				);
-          			},
-          		},
-          	],
+            ? [
+              {
+                label: '&Reload',
+                accelerator: 'Ctrl+R',
+                click: () => {
+                  this.mainWindow.webContents.reload();
+                },
+              },
+              {
+                label: 'Toggle &Full Screen',
+                accelerator: 'F11',
+                click: () => {
+                  this.mainWindow.setFullScreen(
+                    !this.mainWindow.isFullScreen(),
+                  );
+                },
+              },
+              {
+                label: 'Toggle &Developer Tools',
+                accelerator: 'Alt+Ctrl+I',
+                click: () => {
+                  this.mainWindow.webContents.toggleDevTools();
+                },
+              },
+            ]
+            : [
+              {
+                label: 'Toggle &Full Screen',
+                accelerator: 'F11',
+                click: () => {
+                  this.mainWindow.setFullScreen(
+                    !this.mainWindow.isFullScreen(),
+                  );
+                },
+              },
+            ],
       },
       {
         label: 'Help',
@@ -279,7 +289,5 @@ export default class MenuBuilder {
         ],
       },
     ];
-
-    return templateDefault;
   }
 }

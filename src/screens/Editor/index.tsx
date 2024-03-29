@@ -10,11 +10,8 @@ interface EditorProps {
 }
 
 const getFileNameFromPath = (path: string) => {
-  // Split the path by '\' or '/' depending on the OS
   const pathParts = path.split(/[\\/]/);
-  // The last part of the path is the file name
-  const fileName = pathParts[pathParts.length - 1];
-  return fileName;
+  return pathParts[pathParts.length - 1];
 }
 
 const Editor = () => {
